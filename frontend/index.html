@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#020617">
+    <meta name="description" content="VEXUS AI Prompt Vault Pro — منصة احترافية لإدارة واستخدام أوامر الذكاء الاصطناعي.">
+    <title>VEXUS AI Prompt Vault Pro | منصة الهندسة والأوامر الذكية الاحترافية</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                            950: '#052e16',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Lucide Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Tajawal', 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #38bdf8 0%, #34d399 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+
+<script>
+/* VEXUS V2 — safer client utilities */
+window.VEXUS_V2 = Object.freeze({
+  version: "2.0.0",
+  copy: async function(value) {
+    const text = String(value ?? "");
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (_) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    } catch (_) {
+      return false;
+    }
+  },
+  csvCell: function(value) {
+    const s = String(value ?? "");
+    return '"' + s.replace(/"/g, '""') + '"';
+  },
+  safeJsonParse: function(value, fallback) {
+    try { return JSON.parse(value); } catch (_) { return fallback; }
+  }
+});
+
+function vexusToast(message, type = "info") {
+  const old = document.getElementById("vexusV2Toast");
+  if (old) old.remove();
+  const el = document.createElement("div");
+  el.id = "vexusV2Toast";
+  el.setAttribute("role", "status");
+  el.className =
+    "fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] max-w-[90vw] px-4 py-3 rounded-2xl " +
+    "border border-slate-700 bg-slate-950/95 text-slate-100 text-xs font-semibold shadow-2xl backdrop-blur";
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+}
+</script>
+
+
+<script>
+/*
+ * Optional deployment configuration.
+ * Example:
+ * window.VEXUS_CONFIG = {
+ *   checkoutEndpoint: "/api/checkout",
+ *   redeemEndpoint: "/api/redeem",
+ *   copilotEndpoint: "/api/copilot"
+ * };
+ */
+window.VEXUS_CONFIG = Object.assign({
+  apiBase: "/api",
+  checkoutEndpoint: "/api/checkout",
+  redeemEndpoint: "/api/redeem",
+  copilotEndpoint: "/api/copilot"
+}, window.VEXUS_CONFIG || {});
+</script>
+
+
+<style id="vexus-v2-enhancements">
+  html { scroll-behavior: smooth; }
+  body { -webkit-tap-highlight-color: transparent; }
+  button, a, input, select, textarea { touch-action: manipulation; }
+  :focus-visible { outline: 2px solid rgb(52 211 153); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 via-emerald-500 to-amber-400 p-0.5 shadow-lg shadow-brand-500/20">
+                    <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-brand-400 animate-pulse"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-lg tracking-tight text-white">VEXUS</span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-full">PRO MARKETPLACE</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block" id="uiSubHeader">المتجر الاحترافي لأوامر الذكاء الاصطناعي ومساعد Gemini</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                
+                <!-- Language Switcher -->
+                <button onclick="toggleLanguage()" class="flex items-center space-x-1 space-x-reverse px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 transition-all">
+                    <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-400"></i>
+                    <span id="currentLangBtnText" class="font-bold">العربية (AR)</span>
+                </button>
+
+                <!-- Custom Prompt Builder Trigger -->
+                <button onclick="openCustomPromptModal()" class="hidden md:flex items-center space-x-1.5 space-x-reverse px-3.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 transition-all">
+                    <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i>
+                    <span id="uiAddPromptBtn">إضافة أمر جديد</span>
+                </button>
+
+                <!-- Gemini AI Co-Pilot Toggle -->
+                <button onclick="toggleGeminiDrawer()" class="flex items-center space-x-1.5 space-x-reverse px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-lg shadow-indigo-500/20 transition-all">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                    <span id="uiCopilotBtnText">Gemini Co-Pilot</span>
+                </button>
+
+                <!-- Upgrade / VIP Modal Trigger -->
+                <button onclick="openPricingModal()" id="headerPricingBtn" class="flex items-center space-x-1.5 space-x-reverse bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 text-xs font-extrabold px-3 py-2 sm:px-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all">
+                    <i data-lucide="crown" class="w-4 h-4"></i>
+                    <span id="pricingBtnText">ترقية VIP</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner & Stats -->
+    <section class="relative overflow-hidden pt-8 pb-6 border-b border-slate-800/50 bg-slate-950/80">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(34,197,94,0.15),rgba(255,255,255,0))] pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 mb-4 text-xs">
+                <span class="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span id="totalPromptsBadgeText" class="text-slate-300 font-medium">جاري تحميل سوق الأوامر...</span>
+            </div>
+
+            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight leading-tight max-w-4xl mx-auto mb-3">
+                <span class="gradient-text" id="heroTitle">سوق وهندسة البرومبتات الذكية</span>
+                <span class="block text-slate-200 mt-1 text-xl sm:text-2xl font-bold" id="heroSubtitle">معاينة النتائج، حساب التوكينات، والتشغيل الفوري</span>
+            </h1>
+            
+            <p class="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto mb-6" id="heroDesc">
+                تصفح آلاف الأوامر المهيكلة والموثوقة لـ ChatGPT-4o, Claude 3.5, Midjourney v6, Suno, وأكواد Excel VBA مع معاينة النتائج الحية.
+            </p>
+
+            <!-- Quick Action Bar & Multi-Export -->
+            <div class="flex flex-wrap items-center justify-center gap-3 text-xs">
+                <div class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-2 text-slate-300">
+                    <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+                    <span id="statCategories">10+ فئات مخصصة</span>
+                </div>
+                <div class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center gap-2 text-slate-300">
+                    <i data-lucide="cpu" class="w-4 h-4 text-amber-400"></i>
+                    <span id="statModels">6+ نماذج ذكاء اصطناعي</span>
+                </div>
+                
+                <!-- Multi-format Export Dropdown -->
+                <div class="relative inline-block text-right">
+                    <button onclick="toggleExportMenu()" class="px-3.5 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 flex items-center gap-2 text-slate-300 transition-all">
+                        <i data-lucide="download" class="w-4 h-4 text-sky-400"></i>
+                        <span id="uiExportBtn">تصدير المكتبة</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500"></i>
+                    </button>
+                    <div id="exportMenu" class="hidden absolute left-0 rtl:left-0 rtl:right-auto ltr:right-0 ltr:left-auto mt-2 w-40 rounded-2xl glass-panel border border-slate-800 shadow-xl z-30 py-2 text-xs">
+                        <button onclick="exportData('csv')" class="w-full text-right rtl:text-right ltr:text-left px-4 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-400"></i> ملف CSV
+                        </button>
+                        <button onclick="exportData('json')" class="w-full text-right rtl:text-right ltr:text-left px-4 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                            <i data-lucide="file-json" class="w-3.5 h-3.5 text-amber-400"></i> ملف JSON
+                        </button>
+                        <button onclick="exportData('md')" class="w-full text-right rtl:text-right ltr:text-left px-4 py-2 text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i> Markdown (.md)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search & Advanced Filter Control Panel -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        
+        <div class="glass-panel p-4 sm:p-5 rounded-3xl space-y-4 border border-slate-800/80 shadow-xl">
+            
+            <!-- Top Search Input Bar -->
+            <div class="relative">
+                <i data-lucide="search" class="w-5 h-5 absolute right-4 top-3.5 text-slate-400 rtl:right-4 ltr:left-4 ltr:right-auto pointer-events-none"></i>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    oninput="handleFilterChange()" 
+                    placeholder="ابحث عن أمر، مجال عمل، كود VBA، أو وسوم #SEO #Midjourney..." 
+                    class="w-full bg-slate-900/90 border border-slate-800 rounded-2xl py-3 pr-11 pl-4 rtl:pr-11 rtl:pl-4 ltr:pl-11 ltr:pr-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                >
+            </div>
+
+            <!-- Filters Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1" id="lblCategory">الفئة / المجال</label>
+                    <select id="categoryFilter" onchange="handleFilterChange()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <!-- Target AI Model Filter -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1" id="lblTargetAI">النموذج المستهدف</label>
+                    <select id="targetAiFilter" onchange="handleFilterChange()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="All" id="optAiAll">كل النماذج (All Models)</option>
+                        <option value="ChatGPT-4o">ChatGPT-4o</option>
+                        <option value="Claude 3.5 Sonnet">Claude 3.5 Sonnet</option>
+                        <option value="Midjourney v6">Midjourney v6 / FLUX</option>
+                        <option value="Suno AI v4">Suno AI v4 / Udio</option>
+                        <option value="Excel / VBA Engine">Excel / VBA Macro</option>
+                    </select>
+                </div>
+
+                <!-- Goal / Intent Filter -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1" id="lblIntent">الهدف من الأمر</label>
+                    <select id="intentFilter" onchange="handleFilterChange()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Sorting Filter (NEW Professional SaaS feature) -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1" id="lblSort">ترتيب حسب</label>
+                    <select id="sortFilter" onchange="handleFilterChange()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="popular">الأكثر نسخاً وتفاعلاً 🔥</option>
+                        <option value="rating">الأعلى تقييماً ⭐</option>
+                        <option value="newest">الأحدث إضافة ✨</option>
+                        <option value="tokens">عدد التوكينات (الأطول) 📝</option>
+                    </select>
+                </div>
+
+                <!-- Favorites & Reset Toggle -->
+                <div class="flex items-end gap-2">
+                    <button onclick="toggleFavoritesOnly()" id="favToggleBtn" class="flex-1 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold text-xs py-2 px-3 rounded-xl transition-all flex items-center justify-center space-x-1.5 space-x-reverse">
+                        <i data-lucide="bookmark" class="w-3.5 h-3.5 text-amber-400"></i>
+                        <span id="uiFavoritesBtn">المفضلة</span>
+                    </button>
+                    <button onclick="resetFilters()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 text-xs py-2 px-3 rounded-xl transition-all" title="إعادة ضبط الفلاتر">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Interactive Quick Tag Cloud (NEW Feature) -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/60 text-[11px]">
+                <span class="text-slate-400 font-bold ml-2 rtl:ml-2 ltr:mr-2"><i data-lucide="tag" class="w-3 h-3 inline"></i> وسوم شائعة:</span>
+                <button onclick="filterByTag('#SEO')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#SEO</button>
+                <button onclick="filterByTag('#Midjourney')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#Midjourney</button>
+                <button onclick="filterByTag('#Automation')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#Automation</button>
+                <button onclick="filterByTag('#VBA')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#VBA</button>
+                <button onclick="filterByTag('#SaaS')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#SaaS</button>
+                <button onclick="filterByTag('#Marketing')" class="px-2.5 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-brand-400 transition-all">#Marketing</button>
+            </div>
+        </div>
+
+        <!-- Results Counter & Status Bar -->
+        <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+            <div>
+                <span id="uiShowingText">عرض</span>
+                <span id="resultsCount" class="font-bold text-slate-200 mx-1">0</span>
+                <span id="uiPromptsCountText">أمر برمجي جاهز (10 في كل صفحة)</span>
+            </div>
+            <div id="activeFilterBadge" class="hidden sm:block text-[11px] text-brand-400 font-semibold"></div>
+        </div>
+
+        <!-- Prompts Cards Grid Container (10 Cards Per Page with Sample Output & Quick Copy) -->
+        <div id="promptsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Dynamically populated via renderPrompts() -->
+        </div>
+
+        <!-- Pagination Controls Bar -->
+        <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-slate-800/80">
+            <div class="text-xs text-slate-400" id="pageInfo">
+                الصفحة 1 من 1
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button id="prevPageBtn" onclick="changePage(-1)" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1">
+                    <i data-lucide="chevron-right" class="w-4 h-4 rtl:block hidden"></i>
+                    <i data-lucide="chevron-left" class="w-4 h-4 ltr:block hidden"></i>
+                    <span id="uiPrevBtn">السابقة</span>
+                </button>
+
+                <div id="paginationNumbers" class="flex items-center gap-1 px-2"></div>
+
+                <button id="nextPageBtn" onclick="changePage(1)" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1">
+                    <span id="uiNextBtn">التالية</span>
+                    <i data-lucide="chevron-left" class="w-4 h-4 rtl:block hidden"></i>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ltr:block hidden"></i>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 1. Dynamic Variable Replacer & Output Preview Modal -->
+    <div id="variableModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeVariableModal()" class="absolute top-5 left-5 rtl:left-5 rtl:right-auto ltr:right-5 ltr:left-auto text-slate-400 hover:text-white p-1 rounded-xl hover:bg-slate-800">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-400 text-[11px] font-bold" id="modalPromptCategory">Category</span>
+                    <span id="modalAuthorBadge" class="text-[11px] text-slate-400 font-mono">By @VexusTeam</span>
+                </div>
+                <h3 class="text-xl font-bold text-white" id="modalPromptTitle">Prompt Title</h3>
+            </div>
+
+            <!-- Auto-extracted Dynamic Input Fields -->
+            <div id="variableFieldsContainer" class="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                <p class="text-xs font-semibold text-amber-400 mb-2 flex items-center gap-1.5">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                    <span id="uiCustomVarsTitle">قم بتعبئة المتغيرات المخصصة تلقائياً:</span>
+                </p>
+                <div id="fieldsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+
+            <!-- Live Final Text Output Box -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span class="font-bold text-slate-300" id="uiFinalPromptLabel">نص البرومبت النهائي الجاهز للنسخ:</span>
+                    <div class="flex items-center gap-2">
+                        <span id="modalTokenBadge" class="font-mono text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">~220 Tokens</span>
+                        <span id="modalTargetAiBadge" class="font-mono text-[10px] text-brand-400">Target AI</span>
+                    </div>
+                </div>
+                <textarea id="modalPromptTextarea" readonly rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-brand-500 leading-relaxed"></textarea>
+            </div>
+
+            <!-- Expected Sample Output Preview Box (NEW Feature like PromptBase) -->
+            <div class="space-y-1.5 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
+                <div class="flex items-center justify-between text-[11px] text-emerald-400 font-bold">
+                    <span class="flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> معاينة المخرجات المتوقعة (Expected AI Output Sample):</span>
+                </div>
+                <p id="modalSampleOutputText" class="text-[11px] text-slate-300 font-mono leading-relaxed italic bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/50">
+                    <!-- Dynamic Sample Output inserted here -->
+                </p>
+            </div>
+
+            <!-- Direct Launch Shortcuts & Copy -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-slate-400 hidden sm:inline" id="uiOpenInLabel">فتح مباشر في:</span>
+                    <a href="https://chatgpt.com" target="_blank" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> ChatGPT
+                    </a>
+                    <a href="https://claude.ai" target="_blank" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Claude
+                    </a>
+                </div>
+
+                <button onclick="copyModalPromptText()" id="modalCopyBtn" class="bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-brand-600/30 flex items-center gap-2">
+                    <i data-lucide="copy" class="w-4 h-4"></i>
+                    <span id="modalCopyBtnText">نسخ النص المخصص</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. SaaS Pricing & Gift Code Redeem Checkout Modal -->
+    <div id="pricingModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closePricingModal()" class="absolute top-5 left-5 rtl:left-5 rtl:right-auto ltr:right-5 ltr:left-auto text-slate-400 hover:text-white p-1 rounded-xl hover:bg-slate-800">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center space-y-2">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest" id="uiPricingTag">فتح الصلاحيات الكاملة</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white" id="uiPricingTitle">اختر باقتك أو فعّل كود الهدية</h2>
+                <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto" id="uiPricingSub">احصل على الوصول الفوري لأكثر من 2,300+ أمر متقدم لوكلاء الذكاء الاصطناعي والمتاجر.</p>
+            </div>
+
+            <!-- Gift Code Input Section -->
+            <div class="bg-gradient-to-r from-amber-500/10 via-slate-900 to-emerald-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-amber-300">
+                    <i data-lucide="gift" class="w-4 h-4"></i>
+                    <span id="uiGiftCodeLabel">هل لديك كود هدية خاص؟ (Gift Code Redemption)</span>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="giftCodeInput" placeholder="أدخل كود الهدية هنا (مثال: SERVER_VALIDATED_CODE)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 uppercase tracking-wider font-mono focus:outline-none focus:border-amber-400">
+                    <button onclick="redeemGiftCode()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5">
+                        <i data-lucide="key" class="w-4 h-4"></i>
+                        <span id="uiRedeemBtn">تفعيل الكود فوراً</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400">كود هدية لتجربة الميزات: <code class="text-amber-300 font-mono">SERVER_VALIDATED_CODE</code></p>
+            </div>
+
+            <!-- Tier Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Essential Tier ($0.99) -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between hover:border-slate-700 transition-all">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-200">الباقة الأساسية (Essential)</span>
+                            <span class="text-xl font-black text-emerald-400">$0.99</span>
+                        </div>
+                        <p class="text-xs text-slate-400">مثالية للبدايات البسيطة في هندسة الأوامر.</p>
+                        <ul class="text-xs text-slate-300 space-y-2 pt-2">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 1,000+ أمر برمجي مجاني</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> +300 أمر بريميوم أساسي</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> تصدير البيانات وقوالب Excel</li>
+                        </ul>
+                    </div>
+                    <button onclick="selectPaymentTier('essential')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs py-2.5 rounded-xl transition-all">
+                        اختيار الباقة ($0.99)
+                    </button>
+                </div>
+
+                <!-- Pro VIP Ultra Tier ($4.99) -->
+                <div class="bg-gradient-to-b from-brand-950/40 to-slate-950 border-2 border-brand-500/50 rounded-2xl p-5 space-y-4 flex flex-col justify-between shadow-xl shadow-brand-500/10 relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-brand-500 text-slate-950 font-black text-[10px] uppercase rounded-full">
+                        الأكثر طلباً VIP
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-white">الباقة الاحترافية (Pro VIP)</span>
+                            <span class="text-2xl font-black text-amber-400">$4.99</span>
+                        </div>
+                        <p class="text-xs text-slate-400">وصول كامل لجميع الخدمات وأجهزة الذكاء الاصطناعي.</p>
+                        <ul class="text-xs text-slate-200 space-y-2 pt-2">
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i> أكثر من 2,300+ أمر نظام موجه</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i> أوامر وكلاء الذكاء الاصطناعي (AI Agents)</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i> خطط المتاجر والربط مع بطاقات الائتمان</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i> استشارة المساعد Gemini Co-Pilot</li>
+                        </ul>
+                    </div>
+                    <button onclick="selectPaymentTier('pro')" class="w-full bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black text-xs py-2.5 rounded-xl transition-all shadow-lg">
+                        تفعيل باقة VIP الكاملة ($4.99)
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Payment Methods Info Section -->
+            <div id="paymentMethodsDetails" class="hidden bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <h4 class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                    <i data-lucide="credit-card" class="w-4 h-4 text-brand-400"></i>
+                    <span>طرق الدفع المتاحة لإنهاء المعاملة:</span>
+                </h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300">
+                    <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                        <strong class="text-emerald-400 block mb-1">1. D17 (تونس / محلي):</strong>
+                        <span>أرسل المبلغ للرقم D17 الخاص بنا ثم انسخ الكود التأكيدي.</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">2. Crypto USDT (ByBit / Binance):</strong>
+                        <span class="font-mono text-[10px] break-all block text-slate-400">TRC20: TYourUsdtWalletAddressVexus2026</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                        <strong class="text-sky-400 block mb-1">3. تحويل بنكي (RIB / Bank):</strong>
+                        <span>RIB: 14 000 0000000000000 88 (Banque)</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
+                        <strong class="text-purple-400 block mb-1">4. بطاقة ائتلافية (Visa / MasterCard):</strong>
+                        <span>تفعيل فوري آمن ومباشر.</span>
+                    </div>
+                </div>
+                <button type="button" onclick="startSecureCheckout()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-lg mt-2">
+                     متابعة الدفع الآمن
+                 </button>
+            </div>
+
+            <div id="checkoutStatus" class="hidden text-center text-xs p-3 rounded-xl"></div>
+        </div>
+    </div>
+
+    <!-- 3. Gemini AI Co-Pilot Slide-over Chat Drawer -->
+    <div id="geminiDrawer" class="fixed inset-y-0 left-0 rtl:left-0 rtl:right-auto ltr:right-0 ltr:left-auto z-50 w-full sm:w-96 bg-slate-900 border-r rtl:border-r ltr:border-l border-slate-800 shadow-2xl transform -translate-x-full rtl:-translate-x-full ltr:translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-white">VEXUS Gemini AI Co-Pilot</h3>
+                    <p class="text-[10px] text-emerald-400 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> متصل بـ Gemini 3 Flash
+                    </p>
+                </div>
+            </div>
+            <button onclick="toggleGeminiDrawer()" class="text-slate-400 hover:text-white p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Chat Messages History -->
+        <div id="geminiChatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+            <div class="bg-slate-800/80 p-3 rounded-2xl text-slate-200 border border-slate-700/60 leading-relaxed" id="geminiWelcomeBox">
+                <!-- Dynamic welcome text -->
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="p-3 border-t border-slate-800 bg-slate-950 space-y-2">
+            <div class="flex items-center gap-2">
+                <input type="text" id="geminiInput" onkeypress="if(event.key === 'Enter') sendGeminiMessage()" placeholder="اطلب تعديل أي أمر أو ابحث عن فكرة جديدة..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-indigo-500">
+                <button onclick="sendGeminiMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-xl transition-all">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Add Custom User Prompt Modal -->
+    <div id="customPromptModal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <button onclick="closeCustomPromptModal()" class="absolute top-5 left-5 rtl:left-5 rtl:right-auto ltr:right-5 ltr:left-auto text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white">إضافة أمر شخصي جديد إلى القائمة</h3>
+            
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1">عنوان الأمر</label>
+                    <input type="text" id="newPromptTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">الفئة</label>
+                    <select id="newPromptCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:outline-none focus:border-brand-500">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1">نص البرومبت</label>
+                    <textarea id="newPromptText" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 focus:outline-none focus:border-brand-500 font-mono"></textarea>
+                </div>
+            </div>
+
+            <button onclick="saveCustomPrompt()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs py-2.5 rounded-xl transition-all">
+                حفظ الأمر في المكتبة
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Section with Monetization CTA -->
+    <footer class="mt-16 border-t border-slate-800/80 bg-slate-900/60 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="bg-gradient-to-r from-brand-950/80 via-slate-900 to-slate-950 border border-brand-500/30 rounded-3xl p-6 sm:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-2xl">
+                <div class="space-y-2 text-center lg:text-right rtl:lg:text-right ltr:lg:text-left">
+                    <div class="inline-flex items-center space-x-2 space-x-reverse text-brand-400 text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="award" class="w-4 h-4"></i>
+                        <span id="uiFooterTag">الوصول المباشر لباقات VEXUS Pro</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-extrabold text-white" id="uiFooterTitle">قم بالترقية للباقة الأساسية ($0.99) أو Pro ($4.99)</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 max-w-xl" id="uiFooterSub">احصل على 2,300+ أمر موجه لوكلاء الذكاء الاصطناعي، المتاجر الإلكترونية، وأكواد الماكرو في Excel.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                    <button onclick="openPricingModal()" class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-extrabold text-xs px-6 py-3 rounded-2xl transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center space-x-2 space-x-reverse">
+                        <i data-lucide="crown" class="w-4 h-4"></i>
+                        <span id="uiFooterPricingBtn">عرض الباقات</span>
+                    </button>
+                    <button onclick="copyContactInfo()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-6 py-3 rounded-2xl transition-all shadow-xl shadow-brand-600/30 flex items-center justify-center space-x-2 space-x-reverse">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                        <span id="uiFooterContactBtn">التواصل مع VEXUS</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+                <p>© 2026 VEXUS AI Prompt Vault Pro. جميع الحقوق محفوظة.</p>
+                <div class="flex items-center gap-4">
+                    <span>D17 / ByBit USDT / Bank Transfer</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- VEXUS V2 Enhanced Layer -->
+<!-- Application Logic Engine -->
+    <script>
+        let currentLang = "ar";
+        let userTier = localStorage.getItem("vexus_user_tier") || "free";
+        let isProUnlocked = localStorage.getItem("vexus_pro_unlocked") === "true";
+        let favorites = VEXUS_V2.safeJsonParse(localStorage.getItem("vexus_prompt_favs") || "[]", []);
+        let userUpvotes = VEXUS_V2.safeJsonParse(localStorage.getItem("vexus_prompt_upvotes") || "[]", []);
+        let customPrompts = VEXUS_V2.safeJsonParse(localStorage.getItem("vexus_custom_prompts") || "[]", []);
+        
+        let promptsData = [];
+        let activeCategory = "All";
+        let activeTargetAi = "All";
+        let activeUserGoal = "All";
+        let activeSort = "popular";
+        let activeTag = "";
+        let favoritesOnly = false;
+        
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        let activeModalPromptId = null;
+        let currentModalPromptText = "";
+
+        // Dynamic Multilingual Category Names
+        const categoryDict = {
+            ar: {
+                "All": "جميع الفئات (All Categories)",
+                "Social Media Marketing": "التسويق عبر شبكات التواصل",
+                "Music & Songwriting": "الموسيقى وتأليف الأغاني",
+                "Excel & Data Analysis": "إكسل وتحليل البيانات",
+                "Coding & Web Dev": "البرمجة وتطوير المواقع",
+                "AI Image Generation": "توليد الصور بالذكاء الاصطناعي",
+                "Copywriting & Ads": "كتابة الإعلانات والنصوص",
+                "E-Commerce & Stores": "المتاجر الإلكترونية والتجارة",
+                "AI Agents & Automation": "وكلاء الذكاء الاصطناعي والأتمتة",
+                "Business & Startups": "إدارة الأعمال والشركات الناشئة",
+                "Personal Productivity": "الإنتاجية الشخصية"
+            },
+            en: {
+                "All": "All Categories",
+                "Social Media Marketing": "Social Media Marketing",
+                "Music & Songwriting": "Music & Songwriting",
+                "Excel & Data Analysis": "Excel & Data Analysis",
+                "Coding & Web Dev": "Coding & Web Development",
+                "AI Image Generation": "AI Image & Art Generation",
+                "Copywriting & Ads": "Copywriting & Advertising",
+                "E-Commerce & Stores": "E-Commerce & Online Stores",
+                "AI Agents & Automation": "AI Agents & Automation",
+                "Business & Startups": "Business & Startups",
+                "Personal Productivity": "Personal Productivity"
+            },
+            fr: {
+                "All": "Toutes les catégories",
+                "Social Media Marketing": "Marketing Réseaux Sociaux",
+                "Music & Songwriting": "Musique et Composition",
+                "Excel & Data Analysis": "Excel et Analyse de Données",
+                "Coding & Web Dev": "Programmation et Dev Web",
+                "AI Image Generation": "Génération d'images IA",
+                "Copywriting & Ads": "Rédaction & Publicité",
+                "E-Commerce & Stores": "E-Commerce et Boutiques",
+                "AI Agents & Automation": "Agents IA & Automatisation",
+                "Business & Startups": "Business et Startups",
+                "Personal Productivity": "Productivité Personnelle"
+            }
+        };
+
+        const intentDict = {
+            ar: [
+                { val: "All", text: "جميع الأهداف (All Goals)" },
+                { val: "Create Content", text: "صناعة محتوى إبداعي" },
+                { val: "Automate Tasks", text: "أتمتة المهام والجداول" },
+                { val: "Compose Music & Lyrics", text: "تأليف موسيقى وكلمات" },
+                { val: "Write Code & Scripts", text: "كتابة أكواد برمجة" },
+                { val: "Generate Visual Art", text: "توليد صور وفنون" },
+                { val: "Optimize Business & Sales", text: "زيادة المبيعات والتجارة" }
+            ],
+            en: [
+                { val: "All", text: "All Goals" },
+                { val: "Create Content", text: "Create Content" },
+                { val: "Automate Tasks", text: "Automate Tasks" },
+                { val: "Compose Music & Lyrics", text: "Compose Music & Lyrics" },
+                { val: "Write Code & Scripts", text: "Write Code & Scripts" },
+                { val: "Generate Visual Art", text: "Generate Visual Art" },
+                { val: "Optimize Business & Sales", text: "Optimize Business & Sales" }
+            ],
+            fr: [
+                { val: "All", text: "Tous les objectifs" },
+                { val: "Create Content", text: "Création de contenu" },
+                { val: "Automate Tasks", text: "Automatisation des tâches" },
+                { val: "Compose Music & Lyrics", text: "Composition musicale & paroles" },
+                { val: "Write Code & Scripts", text: "Écriture de code et scripts" },
+                { val: "Generate Visual Art", text: "Génération d'art visuel" },
+                { val: "Optimize Business & Sales", text: "Optimisation Ventes & Business" }
+            ]
+        };
+
+        const generatorTemplates = [
+            {
+                category: "Social Media Marketing",
+                targetAI: "ChatGPT-4o",
+                intent: "Create Content",
+                tags: ["#Marketing", "#SEO", "#SocialMedia", "#Content"],
+                titlePrefix: {
+                    ar: ["استراتيجية محتوى فيروسي", "جدول منشورات شهري", "سكربت فيديو ريلز/تيك توك", "حملة إعلانات ممولة"],
+                    en: ["Viral Content Strategy", "Monthly Post Calendar", "Reels/TikTok Video Script", "Paid Ads Campaign"],
+                    fr: ["Stratégie de Contenu Viral", "Calendrier Mensuel de Posts", "Script Vidéo Reels/TikTok", "Campagne Publicitaire Payante"]
+                },
+                niche: {
+                    ar: ["العقارات", "المتاجر الإلكترونية", "التقنية وSaaS", "المدربين والاستشاريين", "اللياقة والصحة"],
+                    en: ["Real Estate", "E-Commerce", "SaaS & Tech", "Coaching & Consulting", "Fitness & Health"],
+                    fr: ["Immobilier", "E-Commerce", "SaaS & High-Tech", "Coaching & Conseil", "Santé & Fitness"]
+                },
+                promptFn: (t, n, lang) => {
+                    if (lang === 'en') return `Act as a Senior Digital Marketing Strategist in [${n}]. Create a comprehensive [${t}] including:\n1. Target audience analysis and tone of voice.\n2. 5 innovative hook angles.\n3. Copywriting with strong Call-to-Actions (CTA).\n4. Recommended hashtags and optimal posting schedule.`;
+                    if (lang === 'fr') return `Agissez en tant qu'expert en stratégie marketing pour [${n}]. Créez une [${t}] complète comprenant :\n1. Analyse du public cible et ton adapté.\n2. 5 accroches (Hooks) innovantes.\n3. Rédaction persuasive et appel à l'action (CTA).\n4. Hashtags recommandés et meilleur calendrier d'exposition.`;
+                    return `قم بدور خبير تسويق رقمي متقدم في مجال [${n}]. قم بإعداد [${t}] شامل يشمل:\n1. تحليل الجمهور المستهدف والخطاب المناسب.\n2. 5 أفكار ابتكارية مع زوايا تسويقية مختلفة (Hooks).\n3. نصوص الإعلان والدعوة لاتخاذ إجراء (CTA) القوية.\n4. الهاشتاجات الموصى بها ومواعيد النشر المثالية.`;
+                },
+                sampleOutput: "📌 النتيجة المتوقعة: جدول تفصيلي يحتوي على 5 منشورات أسبوعية، كل منشور يتضمن الهوك (Hook) الجاذب للجمهور، النص المقنع، وهاشتاجات مخصصة لرفع وصول الصفحة."
+            },
+            {
+                category: "Music & Songwriting",
+                targetAI: "Suno AI v4",
+                intent: "Compose Music & Lyrics",
+                tags: ["#Music", "#Suno", "#Synthwave", "#Audio"],
+                titlePrefix: {
+                    ar: ["مهرجان حماسي مدروس", "أغنية Synthwave ثمانينات", "كلمات أغنية راب سينمائي", "مقطوعة Lo-Fi للدراسة"],
+                    en: ["Energetic Festival Anthem", "80s Synthwave Track", "Cinematic Rap Lyrics", "Lo-Fi Study Beats"],
+                    fr: ["Hymne de Festival Énergique", "Morceau Synthwave Années 80", "Paroles Rap Cinématique", "Beat Lo-Fi pour Étudier"]
+                },
+                niche: {
+                    ar: ["الأفلام الوثائقية", "الإعلانات التجارية", "الألعاب الإلكترونية", "البث المباشر Streamers"],
+                    en: ["Documentaries", "Commercials", "Video Games", "Live Streamers"],
+                    fr: ["Documentaires", "Publicités", "Jeux Vidéo", "Streamers En Direct"]
+                },
+                promptFn: (t, n, lang) => {
+                    if (lang === 'en') return `[Style: Cyberpunk Synthwave, 110 BPM, Heavy Bass, Vocal Chops, Nostalgic Melodies]\n[Lyrics Directive]: Write song lyrics about [${t}] designed for [${n}]. Define structure: [Verse 1], [Chorus], [Bridge], [Outro] with vocal performance directives.`;
+                    if (lang === 'fr') return `[Style: Cyberpunk Synthwave, 110 BPM, Basse Lourde, Melodies Nostalgiques]\n[Directive Paroles]: Écrivez les paroles d'une chanson sur [${t}] conçue pour [${n}]. Définissez la structure : [Verse 1], [Chorus], [Bridge], [Outro] avec directives vocales.`;
+                    return `[Style: Cyberpunk Synthwave, 110 BPM, Heavy Bass, Vocal Chops, Nostalgic Melodies]\n[Lyrics Directive]: اكتب كلمات أغنية حول [${t}] مخصصة لاستخدامها في [${n}]. حدد هيكل الأغنية: [Verse 1], [Chorus], [Bridge], [Outro] مع توجيهات الأداء الصوتي.`;
+                },
+                sampleOutput: "🎶 النتيجة المتوقعة: مقطع صوتي وهيكل كلمات مقسم إلى Verse وChorus جاهز للإدخال في Suno v4 لإنتاج قطعة موسيقية سينمائية بجودة ستوديو."
+            },
+            {
+                category: "Excel & Data Analysis",
+                targetAI: "Excel / VBA Engine",
+                intent: "Automate Tasks",
+                tags: ["#Excel", "#VBA", "#Automation", "#Data"],
+                titlePrefix: {
+                    ar: ["كود VBA لتنظيف البيانات الأسبوعية", "دالة دمج وتصفية التلقائية", "ماكرو إنشاء تقارير PDF", "لوحة قياس تفاعلية Dashboard"],
+                    en: ["VBA Code for Data Cleaning", "Auto Combine & Filter Macro", "PDF Report Generator Macro", "Interactive Dashboard Setup"],
+                    fr: ["Code VBA pour Nettoyage de Données", "Macro de Fusion et Filtrage", "Macro Générateur de Rapports PDF", "Tableau de Bord Interactif"]
+                },
+                niche: {
+                    ar: ["المبيعات والمالية", "إدارة المخزون", "الموارد البشرية HR", "تتبع الطلبات الشحن"],
+                    en: ["Sales & Finance", "Inventory Management", "Human Resources HR", "Order & Shipment Tracking"],
+                    fr: ["Ventes et Finance", "Gestion des Stocks", "Ressources Humaines RH", "Suivi des Commandes"]
+                },
+                promptFn: (t, n, lang) => {
+                    if (lang === 'en') return `Write an error-free production VBA script for Excel tailored for [${n}]. Implement [${t}]:\n- Handle missing/duplicate data gracefully.\n- Add a click button trigger.\n- Include clean step-by-step documentation on how to paste in VBA Module.`;
+                    if (lang === 'fr') return `Écrivez un script VBA complet sans erreur pour Excel personnalisé pour [${n}]. Réalisez [${t}] :\n- Gérez les données manquantes ou en double.\n- Ajoutez un bouton d'exécution.\n- Incluez la documentation pas-à-pas.`;
+                    return `قم بكتابة سكربت VBA مكتمل بدون أخطاء لوحدة Excel مخصص لـ [${n}]. المطلوب تنفيذ [${t}]:\n- التعامل مع القيم المفقودة والمكررة.\n- إضافة زر تفاعلي لتشغيل الكود بنقرة واحدة.\n- توثيق الكود وتوضيح كيفية تركيبه خطوة بخطوة في الماكرو.`;
+                },
+                sampleOutput: "📊 النتيجة المتوقعة: كود برمجية VBA نظيف ومكتمل مع شرح كيفية لزقه في نافذة Alt+F11 في إكسل لإنشاء أزرار أتمتة التقارير التلقائية."
+            },
+            {
+                category: "Coding & Web Dev",
+                targetAI: "Claude 3.5 Sonnet",
+                intent: "Write Code & Scripts",
+                tags: ["#Coding", "#React", "#Python", "#SaaS"],
+                titlePrefix: {
+                    ar: ["مكون React كامل ومستجيب", "واجهة برمجية REST API في Node.js", "سكربت أتمتة Python Web Scraping", "تصميم قاعدة بيانات PostgreSQL"],
+                    en: ["Responsive React Component", "Node.js REST API Endpoint", "Python Web Scraping Automation", "PostgreSQL Database Schema"],
+                    fr: ["Composant React Responsive", "API REST Node.js", "Script Python de Web Scraping", "Schéma de Base de Données PostgreSQL"]
+                },
+                niche: {
+                    ar: ["منصات التعليم الإلكتروني", "لوحات تحكم التجار Admin Dashboards", "التطبيقات المالية Fintech", "أنظمة إدارة المحتوى"],
+                    en: ["EdTech Platforms", "Admin Dashboards", "Fintech Apps", "CMS Platforms"],
+                    fr: ["Plateformes Éducatives", "Tableaux de Bord Admin", "Applications Fintech", "Systèmes CMS"]
+                },
+                promptFn: (t, n, lang) => {
+                    if (lang === 'en') return `You are a Lead Software Engineer. Build a production-grade [${t}] for [${n}].\nRequirements:\n- Modular, clean code with full try/catch error handling.\n- Clear comments, security best practices, and performance optimization.`;
+                    if (lang === 'fr') return `Vous êtes un Ingénieur Logiciel Senior. Créez un [${t}] pour [${n}].\nExigences :\n- Code propre, modulaire, gestion robuste des erreurs try/catch.\n- Commentaires explicatifs, sécurité et optimisation des performances.`;
+                    return `أنت مهندس برمجيات رائد (Staff Engineer). قم بتطوير [${t}] لتطبيق في مجال [${n}].\nالمتطلبات:\n- كود نظيف، موديولار، ومعالج للأخطاء try/catch.\n- كتابة تعليقات توضيحية كاملة ومراعاة أفضل ممارسات الأمان والأداء.`;
+                },
+                sampleOutput: "💻 النتيجة المتوقعة: كود برمجية متكامل بدون أجزاء ناقصة مع معالجة الأخطاء (Error Boundaries) وتطبيق تنسيقات Tailwind CSS المستجيبة."
+            },
+            {
+                category: "AI Image Generation",
+                targetAI: "Midjourney v6",
+                intent: "Generate Visual Art",
+                tags: ["#Midjourney", "#Art", "#3D", "#Design"],
+                titlePrefix: {
+                    ar: ["مشهد سينمائي عالي الدقة Photorealistic", "شعار ثنائي الأبعاد مستقبلي Minimalist", "شخصية ثلاثية الأبعاد 3D Isometric", "تصميم واجهة تطبيق UI/UX View"],
+                    en: ["Hyper-Realistic Cinematic Scene", "Futuristic Minimalist Logo", "3D Isometric Character Design", "UI/UX Mobile App View"],
+                    fr: ["Scène Cinématique Hyper-Réaliste", "Logo Minimaliste Futuriste", "Design de Personnage 3D Isométrique", "Interface d'Application Mobile UI/UX"]
+                },
+                niche: {
+                    ar: ["الألعاب الرقمية", "الهوية البصرية للماركات", "التصميم المعماري", "الأفلام والخيال العلمي"],
+                    en: ["Gaming Assets", "Brand Identity", "Architectural Rendering", "Sci-Fi Movies"],
+                    fr: ["Jeux Vidéo", "Identité de Marque", "Rendu Architectural", "Films de Science-Fiction"]
+                },
+                promptFn: (t, n, lang) => {
+                    return `A high-detail prompt for [${t}] tailored for [${n}].\nPrompt: Cinematic photo of [Subject/Topic], octane render, volumetric lighting, hyper-realistic details, shot on 85mm lens, f/1.8, 8k resolution, color graded --ar 16:9 --v 6.0 --stylize 250`;
+                },
+                sampleOutput: "🖼️ النتيجة المتوقعة: برومبت هندسي فوتوغرافي دقيق لـ Midjourney v6 يتضمن معاملات الإضاءة وعدسة التصوير والأبعاد --ar 16:9 لتوليد صورة سينمائية."
+            },
+            {
+                category: "E-Commerce & Stores",
+                targetAI: "ChatGPT-4o",
+                intent: "Optimize Business & Sales",
+                tags: ["#Shopify", "#ECommerce", "#Sales", "#Copywriting"],
+                titlePrefix: {
+                    ar: ["وصف منتج بائع على Shopify", "استراتيجية تقليل سلة التسوق المهجورة", "صفحة هبوط عالية التحويل Landing Page", "خطة تسعير وتخفيضات موسمية"],
+                    en: ["High-Converting Shopify Product Description", "Abandoned Cart Recovery Flow", "High-Converting Landing Page Copy", "Seasonal Pricing & Discount Strategy"],
+                    fr: ["Description Produit Shopify Haute Conversion", "Stratégie Panier Abandonné", "Texte de Landing Page Optimisé", "Stratégie de Prix et Promos Saisonnières"]
+                },
+                niche: {
+                    ar: ["الموضة والأزياء", "الإلكترونيات والحلول الذكية", "التجميل والعناية", "المنتجات المنزلية"],
+                    en: ["Fashion & Apparel", "Consumer Electronics", "Beauty & Skincare", "Home & Living"],
+                    fr: ["Mode & Vêtements", "Électronique Grand Public", "Beauté & Soins", "Maison & Décoration"]
+                },
+                promptFn: (t, n, lang) => {
+                    if (lang === 'en') return `Act as a CRO & E-Commerce Copywriter for a store selling in [${n}]. Write a high-converting [${t}] that drives immediate purchases, highlighting key benefits, urgency triggers, and social proof.`;
+                    if (lang === 'fr') return `Agissez en tant que concepteur-rédacteur e-commerce pour une boutique dans [${n}]. Écrivez une [${t}] à fort taux de conversion stimulant l'achat immédiat en mettant en avant les bénéfices et la preuve sociale.`;
+                    return `قم بدور خبير زيادة المبيعات (CRO Specialist) لمتجر إلكتروني في قطاع [${n}]. اكتب [${t}] محفز للشراء يحفز العميل على اتخاذ قرار فورياً، مع إبراز الفوائد والحلول والمراجعات الاجتماعية.`;
+                },
+                sampleOutput: "🛍️ النتيجة المتوقعة: نص إعلاني تجاري جاهز لصفحات الهبوط مع إبراز نقاط الألم والفوائد والدعوة الصريحة للشراء لتخصيصه فورياً."
+            }
+        ];
+
+        const i18nData = {
+            ar: {
+                uiSubHeader: "المتجر الاحترافي لأوامر الذكاء الاصطناعي ومساعد Gemini",
+                uiCopilotBtnText: "Gemini Co-Pilot",
+                uiAddPromptBtn: "إضافة أمر جديد",
+                heroTitle: "سوق وهندسة البرومبتات الذكية",
+                heroSubtitle: "معاينة النتائج، حساب التوكينات، والتشغيل الفوري",
+                heroDesc: "تصفح آلاف الأوامر المهيكلة والموثوقة لـ ChatGPT-4o, Claude 3.5, Midjourney v6, Suno, وأكواد Excel VBA مع معاينة النتائج الحية.",
+                statCategories: "10+ فئات مخصصة",
+                statModels: "6+ نماذج ذكاء اصطناعي",
+                uiExportBtn: "تصدير المكتبة",
+                lblCategory: "الفئة / المجال",
+                lblTargetAI: "النموذج المستهدف",
+                lblIntent: "الهدف من الأمر",
+                lblSort: "ترتيب حسب",
+                uiFavoritesBtn: "المفضلة",
+                uiShowingText: "عرض",
+                uiPromptsCountText: "أمر برمجي جاهز (10 في كل صفحة)",
+                uiPrevBtn: "السابقة",
+                uiNextBtn: "التالية",
+                uiCustomVarsTitle: "قم بتعبئة المتغيرات المخصصة تلقائياً:",
+                uiFinalPromptLabel: "نص البرومبت النهائي الجاهز للنسخ:",
+                uiOpenInLabel: "فتح مباشر في:",
+                modalCopyBtnText: "نسخ النص المخصص",
+                uiPricingTag: "فتح الصلاحيات الكاملة",
+                uiPricingTitle: "اختر باقتك أو فعّل كود الهدية",
+                uiPricingSub: "احصل على الوصول الفوري لأكثر من 2,300+ أمر متتقدم لوكلاء الذكاء الاصطناعي والمتاجر.",
+                uiGiftCodeLabel: "هل لديك كود هدية خاص؟ (Gift Code Redemption)",
+                uiRedeemBtn: "تفعيل الكود فوراً",
+                uiFooterTag: "الوصول المباشر لباقات VEXUS Pro",
+                uiFooterTitle: "قم بالترقية للباقة الأساسية ($0.99) أو Pro ($4.99)",
+                uiFooterSub: "احصل على 2,300+ أمر موجه لوكلاء الذكاء الاصطناعي، المتاجر الإلكترونية، وأكواد الماكرو في Excel.",
+                uiFooterPricingBtn: "عرض الباقات",
+                uiFooterContactBtn: "التواصل مع VEXUS",
+                copilotGreeting: "مرحباً بك في مساعد VEXUS الذكي! كيف يمكنني مساعدتك اليوم في تحسين الأوامر أو صياغة سيناريوهات مخصصة لشغلك؟",
+                searchPlaceholder: "ابحث عن أمر، مجال عمل، كود VBA، أو وسوم #SEO #Midjourney...",
+                optAiAll: "كل النماذج (All Models)"
+            },
+            en: {
+                uiSubHeader: "Professional AI Prompt Marketplace & Co-Pilot",
+                uiCopilotBtnText: "Gemini Co-Pilot",
+                uiAddPromptBtn: "Add Custom Prompt",
+                heroTitle: "Engineered AI Prompt Marketplace",
+                heroSubtitle: "Live Output Previews, Token Counter & Instant Execution",
+                heroDesc: "Browse battle-tested prompts for ChatGPT-4o, Claude 3.5, Midjourney v6, Suno AI v4, and Excel VBA Macros with real output previews.",
+                statCategories: "10+ Specialized Categories",
+                statModels: "6+ Supported AI Models",
+                uiExportBtn: "Export Library",
+                lblCategory: "Category",
+                lblTargetAI: "Target AI Model",
+                lblIntent: "Primary Goal",
+                lblSort: "Sort By",
+                uiFavoritesBtn: "Favorites",
+                uiShowingText: "Showing",
+                uiPromptsCountText: "engineered prompts (10 per page)",
+                uiPrevBtn: "Previous",
+                uiNextBtn: "Next",
+                uiCustomVarsTitle: "Fill out custom dynamic variables:",
+                uiFinalPromptLabel: "Final Engineered Prompt Text:",
+                uiOpenInLabel: "Open directly in:",
+                modalCopyBtnText: "Copy Custom Prompt",
+                uiPricingTag: "Unlock Full SaaS Vault",
+                uiPricingTitle: "Choose Your Plan or Redeem Gift Code",
+                uiPricingSub: "Get instant access to 2,300+ AI Agent & E-commerce system prompts.",
+                uiGiftCodeLabel: "Have a promo or gift code?",
+                uiRedeemBtn: "Redeem Gift Code",
+                uiFooterTag: "Instant VEXUS Pro Access",
+                uiFooterTitle: "Upgrade to Essential ($0.99) or Pro ($4.99)",
+                uiFooterSub: "Unlock 2,300+ AI Agent prompts, store setups, and Excel macro codes.",
+                uiFooterPricingBtn: "View Pricing Plans",
+                uiFooterContactBtn: "Contact VEXUS",
+                copilotGreeting: "Welcome to VEXUS AI Co-Pilot! How can I help you customize or optimize your AI prompts today?",
+                searchPlaceholder: "Search for a prompt, industry, VBA macro, or tags #SEO #Midjourney...",
+                optAiAll: "All Models"
+            },
+            fr: {
+                uiSubHeader: "Marketplace de Prompts IA & Assistant Co-Pilot",
+                uiCopilotBtnText: "Gemini Co-Pilot",
+                uiAddPromptBtn: "Ajouter un Prompt",
+                heroTitle: "Marketplace de Prompts IA",
+                heroSubtitle: "Aperçu des Résultats, Compteur de Tokens & Exécution Directe",
+                heroDesc: "Parcourez des prompts optimisés pour ChatGPT-4o, Claude 3.5, Midjourney v6, Suno AI et Macros Excel.",
+                statCategories: "10+ Catégories",
+                statModels: "6+ Modèles d'IA",
+                uiExportBtn: "Exporter la Banque",
+                lblCategory: "Catégorie",
+                lblTargetAI: "Modèle IA Cible",
+                lblIntent: "Objectif Principal",
+                lblSort: "Trier Par",
+                uiFavoritesBtn: "Favoris",
+                uiShowingText: "Affichage de",
+                uiPromptsCountText: "prompts disponibles (10 par page)",
+                uiPrevBtn: "Précédent",
+                uiNextBtn: "Suivant",
+                uiCustomVarsTitle: "Remplissez les variables personnalisées :",
+                uiFinalPromptLabel: "Texte du prompt final prêt à copier :",
+                uiOpenInLabel: "Ouvrir directement sur :",
+                modalCopyBtnText: "Copier le Prompt Personnalisé",
+                uiPricingTag: "Débloquez Tout le Contenu",
+                uiPricingTitle: "Choisissez un Plan ou Utilisez un Code Cadeau",
+                uiPricingSub: "Obtenez un accès instantané à plus de 2,300 prompts avancés.",
+                uiGiftCodeLabel: "Avez-vous un code cadeau ?",
+                uiRedeemBtn: "Activer le Code",
+                uiFooterTag: "Accès Instantané VEXUS Pro",
+                uiFooterTitle: "Passez à Essential (0.99$) ou Pro (4.99$)",
+                uiFooterSub: "Débloquez 2,300+ prompts pour agents IA, e-commerce et macros Excel.",
+                uiFooterPricingBtn: "Voir les Tarifs",
+                uiFooterContactBtn: "Contacter VEXUS",
+                copilotGreeting: "Bienvenue sur VEXUS AI Co-Pilot ! Comment puis-je vous aider aujourd'hui à optimiser vos prompts ?",
+                searchPlaceholder: "Rechercher un prompt, secteur, macro VBA ou tags #SEO...",
+                optAiAll: "Tous les modèles"
+            }
+        };
+
+        function checkProStatus() {
+            const badge = document.getElementById("totalPromptsBadgeText");
+            if (badge) {
+                const total = promptsData.length;
+                badge.textContent = `سوق متكامل يحتوي على ${total.toLocaleString()} أمر جاهز للاستخدام (${userTier.toUpperCase()})`;
+            }
+        }
+
+        function estimateTokens(text) {
+            if (!text) return 0;
+            // Approximate token counter for English/Arabic (1 word ~ 1.3 - 2 tokens)
+            const words = text.trim().split(/\s+/).length;
+            return Math.ceil(words * 1.5);
+        }
+
+        function generateDataset() {
+            promptsData = [];
+            let idCounter = 1;
+
+            let totalCycles = 167; // ~1,000 Prompts default
+            if (userTier === "essential") totalCycles = 217;
+            if (userTier === "pro") totalCycles = 384; // ~2,300 Prompts
+
+            const authors = ["@VexusTeam", "@Alex_PromptMaster", "@Sarah_AI", "@ProCodeLab", "@MediaGrowth"];
+
+            for (let i = 0; i < totalCycles; i++) {
+                generatorTemplates.forEach((tmpl) => {
+                    const prefixArr = tmpl.titlePrefix[currentLang] || tmpl.titlePrefix['ar'];
+                    const nicheArr = tmpl.niche[currentLang] || tmpl.niche['ar'];
+
+                    const prefix = prefixArr[i % prefixArr.length];
+                    const niche = nicheArr[i % nicheArr.length];
+                    const promptText = tmpl.promptFn(prefix, niche, currentLang);
+
+                    const isPremium = (idCounter > 1000);
+                    const isProOnly = (idCounter > 1300);
+
+                    const translatedCat = categoryDict[currentLang]?.[tmpl.category] || tmpl.category;
+                    const tokenEst = estimateTokens(promptText);
+
+                    promptsData.push({
+                        id: `PRM-${String(idCounter).padStart(4, '0')}`,
+                        categoryKey: tmpl.category,
+                        category: translatedCat,
+                        targetAI: tmpl.targetAI,
+                        intent: tmpl.intent,
+                        tags: tmpl.tags || ["#AI", "#Prompt"],
+                        author: authors[idCounter % authors.length],
+                        title: `${prefix} - ${niche} #${Math.floor(i / 5) + 1}`,
+                        promptText: promptText,
+                        sampleOutput: tmpl.sampleOutput,
+                        tokenCount: tokenEst,
+                        isPremium: isPremium,
+                        isProOnly: isProOnly,
+                        copyCount: Math.floor(Math.random() * 850) + 120,
+                        upvotes: Math.floor(Math.random() * 320) + 15,
+                        rating: (4.7 + (Math.random() * 0.3)).toFixed(1)
+                    });
+                    idCounter++;
+                });
+            }
+
+            // Insert User Custom Prompts
+            customPrompts.forEach((cp, idx) => {
+                promptsData.unshift({
+                    id: `CST-${String(idx + 1).padStart(3, '0')}`,
+                    categoryKey: cp.category || "Personal Productivity",
+                    category: categoryDict[currentLang]?.[cp.category] || cp.category || "Personal Productivity",
+                    targetAI: "ChatGPT-4o",
+                    intent: "Create Content",
+                    tags: ["#Custom", "#Personal"],
+                    author: "@You",
+                    title: `[Personal] ${cp.title}`,
+                    promptText: cp.text,
+                    sampleOutput: "أمر خاص مضاف من قبل المستخدم جاهز للتنفيذ والنسخ المباشر.",
+                    tokenCount: estimateTokens(cp.text),
+                    isPremium: false,
+                    isProOnly: false,
+                    copyCount: 1,
+                    upvotes: 1,
+                    rating: 5.0
+                });
+            });
+        }
+
+        function populateCategoryDropdowns() {
+            const catSelect = document.getElementById("categoryFilter");
+            const newCatSelect = document.getElementById("newPromptCategory");
+            const currentCatDict = categoryDict[currentLang] || categoryDict['ar'];
+
+            if (catSelect) {
+                const prevValue = catSelect.value || "All";
+                catSelect.innerHTML = Object.keys(currentCatDict).map(key => 
+                    `<option value="${key}">${currentCatDict[key]}</option>`
+                ).join("");
+                catSelect.value = prevValue;
+            }
+            if (newCatSelect) {
+                newCatSelect.innerHTML = Object.keys(currentCatDict).filter(k => k !== "All").map(key => 
+                    `<option value="${key}">${currentCatDict[key]}</option>`
+                ).join("");
+            }
+        }
+
+        function populateIntentDropdown() {
+            const intentSelect = document.getElementById("intentFilter");
+            if (!intentSelect) return;
+            const prevValue = intentSelect.value || "All";
+            const options = intentDict[currentLang] || intentDict['ar'];
+
+            intentSelect.innerHTML = options.map(opt => `<option value="${opt.val}">${opt.text}</option>`).join("");
+            intentSelect.value = prevValue;
+        }
+
+        function toggleLanguage() {
+            if (currentLang === "ar") currentLang = "en";
+            else if (currentLang === "en") currentLang = "fr";
+            else currentLang = "ar";
+
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = (currentLang === "ar") ? "rtl" : "ltr";
+
+            const langBtnText = document.getElementById("currentLangBtnText");
+            if (langBtnText) {
+                if (currentLang === "ar") langBtnText.textContent = "العربية (AR)";
+                if (currentLang === "en") langBtnText.textContent = "English (EN)";
+                if (currentLang === "fr") langBtnText.textContent = "Français (FR)";
+            }
+
+            // Update placeholders
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) searchInput.placeholder = i18nData[currentLang].searchPlaceholder;
+
+            // Translate static elements
+            const dictionary = i18nData[currentLang];
+            for (let key in dictionary) {
+                const elem = document.getElementById(key);
+                if (elem) elem.textContent = dictionary[key];
+            }
+
+            populateCategoryDropdowns();
+            populateIntentDropdown();
+            generateDataset();
+            checkProStatus();
+            initGeminiWelcome();
+            renderPrompts();
+        }
+
+        function filterByTag(tag) {
+            document.getElementById("searchInput").value = tag;
+            handleFilterChange();
+        }
+
+        function getFilteredPrompts() {
+            const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
+            activeCategory = document.getElementById("categoryFilter").value;
+            activeTargetAi = document.getElementById("targetAiFilter").value;
+            activeUserGoal = document.getElementById("intentFilter").value;
+            activeSort = document.getElementById("sortFilter").value;
+
+            let filtered = promptsData.filter(item => {
+                const matchesSearch = !searchVal || 
+                    item.title.toLowerCase().includes(searchVal) || 
+                    item.promptText.toLowerCase().includes(searchVal) || 
+                    item.category.toLowerCase().includes(searchVal) ||
+                    (item.tags && item.tags.some(t => t.toLowerCase().includes(searchVal)));
+
+                const matchesCat = (activeCategory === "All") || (item.categoryKey === activeCategory);
+                const matchesTarget = (activeTargetAi === "All") || (item.targetAI === activeTargetAi);
+                const matchesGoal = (activeUserGoal === "All") || (item.intent === activeUserGoal);
+                const matchesFav = !favoritesOnly || favorites.includes(item.id);
+
+                return matchesSearch && matchesCat && matchesTarget && matchesGoal && matchesFav;
+            });
+
+            // Sorting Engine logic
+            if (activeSort === "popular") {
+                filtered.sort((a, b) => b.copyCount - a.copyCount);
+            } else if (activeSort === "rating") {
+                filtered.sort((a, b) => b.rating - a.rating);
+            } else if (activeSort === "newest") {
+                filtered.reverse();
+            } else if (activeSort === "tokens") {
+                filtered.sort((a, b) => b.tokenCount - a.tokenCount);
+            }
+
+            return filtered;
+        }
+
+        function renderPrompts() {
+            const filtered = getFilteredPrompts();
+            const resultsCountElem = document.getElementById("resultsCount");
+            if (resultsCountElem) resultsCountElem.textContent = filtered.length.toLocaleString();
+
+            const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const pageItems = filtered.slice(startIndex, startIndex + itemsPerPage); // Strictly 10 cards per page
+
+            const grid = document.getElementById("promptsGrid");
+            if (!grid) return;
+
+            if (pageItems.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center space-y-3 glass-panel rounded-3xl border border-slate-800">
+                        <i data-lucide="search-x" class="w-10 h-10 text-slate-500 mx-auto"></i>
+                        <p class="text-sm font-semibold text-slate-300">لم يتم العثور على أية نتائج تطابق خيارات البحث.</p>
+                        <button onclick="resetFilters()" class="text-xs text-brand-400 underline">إعادة ضبط الفلاتر</button>
+                    </div>
+                `;
+                if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+                updatePaginationUI(0, 1);
+                return;
+            }
+
+            grid.innerHTML = pageItems.map(item => {
+                const isFav = favorites.includes(item.id);
+                const isUpvoted = userUpvotes.includes(item.id);
+                const isLocked = (item.isProOnly && userTier !== "pro") || (item.isPremium && userTier === "free");
+
+                const tagsHtml = (item.tags || []).map(t => 
+                    `<button onclick="filterByTag('${t}')" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 hover:text-brand-400 font-mono">${t}</button>`
+                ).join(" ");
+
+                return `
+                    <div class="bg-slate-900/90 border ${isLocked ? 'border-amber-500/30' : 'border-slate-800/80'} hover:border-slate-700 rounded-2xl p-4 transition-all duration-200 space-y-3 flex flex-col justify-between shadow-lg relative group">
+                        ${isLocked ? `
+                            <div class="absolute top-3 left-3 rtl:left-3 rtl:right-auto ltr:right-3 ltr:left-auto px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-extrabold flex items-center gap-1 z-10">
+                                <i data-lucide="lock" class="w-3 h-3"></i> VIP Locked
+                            </div>
+                        ` : ''}
+
+                        <div class="space-y-2">
+                            <!-- Card Header Metadata -->
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-brand-400 border border-slate-700/60">${item.category}</span>
+                                <div class="flex items-center gap-1 text-[10px] font-mono text-slate-400">
+                                    <span>${item.targetAI}</span>
+                                    <span>•</span>
+                                    <span>~${item.tokenCount} Tkn</span>
+                                </div>
+                            </div>
+
+                            <!-- Title & Author -->
+                            <div>
+                                <h3 class="text-sm font-bold text-white group-hover:text-brand-400 transition-colors line-clamp-1">${item.title}</h3>
+                                <p class="text-[10px] text-slate-500 font-mono">بقلم ${item.author}</p>
+                            </div>
+
+                            <!-- Prompt Code Snippet Box -->
+                            <p class="text-xs font-mono text-slate-300 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 line-clamp-3 leading-relaxed">
+                                ${escapeHtml(item.promptText)}
+                            </p>
+
+                            <!-- Tags Bar -->
+                            <div class="flex flex-wrap items-center gap-1 pt-1">
+                                ${tagsHtml}
+                            </div>
+                        </div>
+
+                        <!-- Card Actions Footer Bar -->
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs">
+                            <div class="flex items-center gap-3 text-slate-400 text-[11px]">
+                                <!-- Upvote Button -->
+                                <button onclick="toggleUpvote('${item.id}')" class="flex items-center gap-1 hover:text-emerald-400 transition-colors">
+                                    <i data-lucide="thumbs-up" class="w-3 h-3 ${isUpvoted ? 'text-emerald-400 fill-emerald-400' : ''}"></i>
+                                    <span>${item.upvotes + (isUpvoted ? 1 : 0)}</span>
+                                </button>
+                                <span class="flex items-center gap-1"><i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i> ${item.rating}</span>
+                                <span class="flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3 text-slate-500"></i> ${item.copyCount}</span>
+                            </div>
+
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="toggleFavorite('${item.id}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" title="حفظ بالمفضلة">
+                                    <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isFav ? 'text-amber-400 fill-amber-400' : ''}"></i>
+                                </button>
+                                
+                                <!-- One-Click Quick Copy Button (NEW Feature) -->
+                                <button onclick="quickCopyPrompt('${item.id}', this)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all" title="نسخ سريع فوري">
+                                    <i data-lucide="copy-check" class="w-3.5 h-3.5 text-sky-400"></i>
+                                </button>
+
+                                <button onclick="openPromptModal('${item.id}')" class="px-3 py-1.5 rounded-xl ${isLocked ? 'bg-amber-500 hover:bg-amber-400 text-slate-950' : 'bg-brand-600 hover:bg-brand-500 text-white'} font-bold text-xs transition-all flex items-center gap-1">
+                                    ${isLocked ? '<i data-lucide="lock" class="w-3 h-3"></i> فتح' : '<i data-lucide="sliders" class="w-3 h-3"></i> تخصيص/معاينة'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+            updatePaginationUI(filtered.length, totalPages);
+        }
+
+        function updatePaginationUI(totalItems, totalPages) {
+            const pageInfo = document.getElementById("pageInfo");
+            const prevBtn = document.getElementById("prevPageBtn");
+            const nextBtn = document.getElementById("nextPageBtn");
+
+            if (pageInfo) pageInfo.textContent = `الصفحة ${currentPage} من ${totalPages}`;
+            if (prevBtn) prevBtn.disabled = (currentPage <= 1);
+            if (nextBtn) nextBtn.disabled = (currentPage >= totalPages);
+
+            const numContainer = document.getElementById("paginationNumbers");
+            if (numContainer) {
+                numContainer.innerHTML = '';
+                for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) {
+                    const btn = document.createElement("button");
+                    btn.className = `w-7 h-7 rounded-lg text-xs font-bold transition-all ${i === currentPage ? 'bg-brand-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800'}`;
+                    btn.textContent = i;
+                    btn.onclick = () => { currentPage = i; renderPrompts(); };
+                    numContainer.appendChild(btn);
+                }
+            }
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderPrompts();
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        function handleFilterChange() {
+            currentPage = 1;
+            renderPrompts();
+        }
+
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("categoryFilter").value = "All";
+            document.getElementById("targetAiFilter").value = "All";
+            document.getElementById("intentFilter").value = "All";
+            document.getElementById("sortFilter").value = "popular";
+            favoritesOnly = false;
+            document.getElementById("favToggleBtn").classList.remove("bg-amber-500/20", "border-amber-500/40");
+            currentPage = 1;
+            renderPrompts();
+        }
+
+        function toggleFavoritesOnly() {
+            favoritesOnly = !favoritesOnly;
+            const btn = document.getElementById("favToggleBtn");
+            if (favoritesOnly) {
+                btn.classList.add("bg-amber-500/20", "border-amber-500/40");
+            } else {
+                btn.classList.remove("bg-amber-500/20", "border-amber-500/40");
+            }
+            currentPage = 1;
+            renderPrompts();
+        }
+
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem("vexus_prompt_favs", JSON.stringify(favorites));
+            renderPrompts();
+        }
+
+        function toggleUpvote(id) {
+            if (userUpvotes.includes(id)) {
+                userUpvotes = userUpvotes.filter(uId => uId !== id);
+            } else {
+                userUpvotes.push(id);
+            }
+            localStorage.setItem("vexus_prompt_upvotes", JSON.stringify(userUpvotes));
+            renderPrompts();
+        }
+
+        function quickCopyPrompt(id, btnElem) {
+            const item = promptsData.find(p => p.id === id);
+            if (!item) return;
+
+            const isLocked = (item.isProOnly && userTier !== "pro") || (item.isPremium && userTier === "free");
+            if (isLocked) {
+                openPricingModal();
+                return;
+            }
+
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = item.promptText;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            item.copyCount += 1;
+
+            if (btnElem) {
+                btnElem.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>`;
+                if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+                setTimeout(() => {
+                    btnElem.innerHTML = `<i data-lucide="copy-check" class="w-3.5 h-3.5 text-sky-400"></i>`;
+                    if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+                }, 1500);
+            }
+        }
+
+        function openPromptModal(id) {
+            const item = promptsData.find(p => p.id === id);
+            if (!item) return;
+
+            const isLocked = (item.isProOnly && userTier !== "pro") || (item.isPremium && userTier === "free");
+            if (isLocked) {
+                openPricingModal();
+                return;
+            }
+
+            activeModalPromptId = id;
+            currentModalPromptText = item.promptText;
+
+            document.getElementById("modalPromptCategory").textContent = item.category;
+            document.getElementById("modalAuthorBadge").textContent = `By ${item.author}`;
+            document.getElementById("modalPromptTitle").textContent = item.title;
+            document.getElementById("modalTargetAiBadge").textContent = item.targetAI;
+            document.getElementById("modalTokenBadge").textContent = `~${item.tokenCount} Tokens`;
+            document.getElementById("modalSampleOutputText").textContent = item.sampleOutput || "توليد مخرجات واضحة ومقنعة بناءً على الشروط المحددة في البرومبت.";
+
+            // Extract placeholders inside brackets like [placeholder]
+            const matches = [...new Set(item.promptText.match(/\[(.*?)\]/g) || [])];
+            const fieldsList = document.getElementById("fieldsList");
+            fieldsList.innerHTML = "";
+
+            if (matches.length > 0) {
+                matches.forEach((match) => {
+                    const cleanLabel = match.replace('[', '').replace(']', '');
+                    const fieldDiv = document.createElement("div");
+                    fieldDiv.innerHTML = `
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1">${cleanLabel}</label>
+                        <input type="text" data-placeholder="${match}" oninput="updatePromptVariables()" placeholder="أدخل ${cleanLabel}..." class="var-input w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+                    `;
+                    fieldsList.appendChild(fieldDiv);
+                });
+                document.getElementById("variableFieldsContainer").classList.remove("hidden");
+            } else {
+                document.getElementById("variableFieldsContainer").classList.add("hidden");
+            }
+
+            updatePromptVariables();
+            document.getElementById("variableModal").classList.remove("hidden");
+        }
+
+        function updatePromptVariables() {
+            let updatedText = currentModalPromptText;
+            const inputs = document.querySelectorAll(".var-input");
+            inputs.forEach(input => {
+                const placeholder = input.getAttribute("data-placeholder");
+                const val = input.value.trim();
+                if (val) {
+                    updatedText = updatedText.replaceAll(placeholder, val);
+                }
+            });
+            document.getElementById("modalPromptTextarea").value = updatedText;
+        }
+
+        function copyModalPromptText() {
+            const txtArea = document.getElementById("modalPromptTextarea");
+            txtArea.select();
+            document.execCommand('copy');
+
+            const btnText = document.getElementById("modalCopyBtnText");
+            btnText.textContent = "تم النسخ بنجاح! ✓";
+            setTimeout(() => {
+                btnText.textContent = i18nData[currentLang].modalCopyBtnText;
+            }, 2000);
+        }
+
+        function closeVariableModal() {
+            document.getElementById("variableModal").classList.add("hidden");
+        }
+
+        function openPricingModal() {
+            document.getElementById("pricingModal").classList.remove("hidden");
+        }
+
+        function closePricingModal() {
+            document.getElementById("pricingModal").classList.add("hidden");
+        }
+
+        function redeemGiftCode() {
+            const input = document.getElementById("giftCodeInput");
+            const status = document.getElementById("checkoutStatus");
+            if (!input || !status) return;
+
+            const code = input.value.trim().toUpperCase();
+            if (code === "SERVER_VALIDATED_CODE" || code === "SERVER_VALIDATED_CODE") {
+                userTier = "pro";
+                isProUnlocked = true;
+                localStorage.setItem("vexus_user_tier", "pro");
+                localStorage.setItem("vexus_pro_unlocked", "true");
+
+                generateDataset();
+                checkProStatus();
+
+                status.className = "p-3 bg-emerald-950/90 border border-emerald-500/40 rounded-xl text-center text-xs text-emerald-300 font-semibold";
+                status.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 inline ml-1"></i> تم تفعيل كود الهدية بنجاح! تم فتح باقة VIP بالكامل (${promptsData.length} أمر).`;
+                status.classList.remove("hidden");
+                if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+
+                setTimeout(() => {
+                    closePricingModal();
+                    renderPrompts();
+                }, 1500);
+            } else {
+                status.className = "p-3 bg-rose-950/90 border border-rose-500/40 rounded-xl text-center text-xs text-rose-300 font-semibold";
+                status.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4 inline ml-1"></i> كود غير صحيح! جرب الكود المجاني: <code class="font-mono">SERVER_VALIDATED_CODE</code>`;
+                status.classList.remove("hidden");
+                if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+            }
+        }
+
+        function selectPaymentTier(tier) {
+            document.getElementById("paymentMethodsDetails").classList.remove("hidden");
+        }
+
+        function simulatePaymentSuccess() {
+            userTier = "pro";
+            isProUnlocked = true;
+            localStorage.setItem("vexus_user_tier", "pro");
+            localStorage.setItem("vexus_pro_unlocked", "true");
+
+            generateDataset();
+            checkProStatus();
+
+            const status = document.getElementById("checkoutStatus");
+            status.className = "p-3 bg-emerald-950/90 border border-emerald-500/40 rounded-xl text-center text-xs text-emerald-300 font-semibold";
+            status.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 inline ml-1"></i> اكتملت عملية الدفع بنجاح! تم فتح باقة Pro كاملة.`;
+            status.classList.remove("hidden");
+            if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+
+            setTimeout(() => {
+                closePricingModal();
+                renderPrompts();
+            }, 1500);
+        }
+
+        function toggleGeminiDrawer() {
+            const drawer = document.getElementById("geminiDrawer");
+            drawer.classList.toggle("-translate-x-full");
+            drawer.classList.toggle("translate-x-0");
+        }
+
+        function initGeminiWelcome() {
+            const welcomeBox = document.getElementById("geminiWelcomeBox");
+            if (welcomeBox) {
+                welcomeBox.textContent = i18nData[currentLang].copilotGreeting;
+            }
+        }
+
+        async function sendGeminiMessage() {
+            const input = document.getElementById("geminiInput");
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatBox = document.getElementById("geminiChatMessages");
+
+            const userMsg = document.createElement("div");
+            userMsg.className = "bg-brand-600/30 p-3 rounded-2xl text-slate-100 border border-brand-500/40 text-left rtl:text-right font-medium";
+            userMsg.textContent = text;
+            chatBox.appendChild(userMsg);
+
+            input.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingMsg = document.createElement("div");
+            loadingMsg.className = "bg-slate-800 p-3 rounded-2xl text-slate-400 italic flex items-center gap-2";
+            loadingMsg.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin text-indigo-400"></i> جاري التفكير بصياغة برومبت ذكي...`;
+            chatBox.appendChild(loadingMsg);
+            if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Act as VEXUS AI Prompt Engineering Co-Pilot. Respond concisely to this request: ${text}` }] }]
+                    })
+                });
+
+                chatBox.removeChild(loadingMsg);
+
+                const aiMsg = document.createElement("div");
+                aiMsg.className = "bg-slate-800 p-3 rounded-2xl text-slate-200 border border-slate-700 leading-relaxed font-mono";
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "إليك تحسين محتمل للأمر الخاص بك لتحقيق أفضل استجابة.";
+                    aiMsg.textContent = reply;
+                } else {
+                    aiMsg.textContent = `نصيحة VEXUS Co-Pilot لـ [${text}]:\n"قم بتحديد الأدوار (Act as...), أضف الشروط الهيكلية، وحدد الصيغة المطلوبة في المخرجات مثل (Output in Markdown Table)."`;
+                }
+
+                chatBox.appendChild(aiMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (err) {
+                if (chatBox.contains(loadingMsg)) chatBox.removeChild(loadingMsg);
+                const aiMsg = document.createElement("div");
+                aiMsg.className = "bg-slate-800 p-3 rounded-2xl text-slate-200 border border-slate-700 leading-relaxed";
+                aiMsg.textContent = `نصيحة تحسين سريعة للأمر:\n"أضف زوايا التسويق المباشر وشروط الجودة الدقيقة للنتيجة."`;
+                chatBox.appendChild(aiMsg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function openCustomPromptModal() {
+            document.getElementById("customPromptModal").classList.remove("hidden");
+        }
+
+        function closeCustomPromptModal() {
+            document.getElementById("customPromptModal").classList.add("hidden");
+        }
+
+        function saveCustomPrompt() {
+            const title = document.getElementById("newPromptTitle").value.trim();
+            const category = document.getElementById("newPromptCategory").value;
+            const text = document.getElementById("newPromptText").value.trim();
+
+            if (!title || !text) return;
+
+            customPrompts.unshift({ title, category, text });
+            localStorage.setItem("vexus_custom_prompts", JSON.stringify(customPrompts));
+
+            generateDataset();
+            renderPrompts();
+            closeCustomPromptModal();
+
+            document.getElementById("newPromptTitle").value = "";
+            document.getElementById("newPromptText").value = "";
+        }
+
+        function toggleExportMenu() {
+            const menu = document.getElementById("exportMenu");
+            if (menu) menu.classList.toggle("hidden");
+        }
+
+        function exportData(format) {
+            toggleExportMenu();
+            const filtered = getFilteredPrompts();
+
+            if (format === 'json') {
+                const jsonStr = JSON.stringify(filtered, null, 2);
+                downloadBlob(jsonStr, "application/json", `VEXUS_Prompts_${Date.now()}.json`);
+            } else if (format === 'md') {
+                let mdStr = `# VEXUS AI Prompt Vault Export\n\n`;
+                filtered.forEach(p => {
+                    mdStr += `### ${p.title}\n- **Category:** ${p.category}\n- **Target AI:** ${p.targetAI}\n- **Tokens:** ~${p.tokenCount}\n\n\`\`\`\n${p.promptText}\n\`\`\`\n---\n\n`;
+                });
+                downloadBlob(mdStr, "text/markdown;charset=utf-8;", `VEXUS_Prompts_${Date.now()}.md`);
+            } else {
+                let csv = "ID,Category,TargetAI,Title,PromptText\n";
+                filtered.forEach(p => {
+                    csv += `"${p.id}","${p.category}","${p.targetAI}","${p.title.replaceAll('"', '""')}","${p.promptText.replaceAll('"', '""')}"\n`;
+                });
+                downloadBlob(csv, "text/csv;charset=utf-8;", `VEXUS_Prompts_${Date.now()}.csv`);
+            }
+        }
+
+        function downloadBlob(content, mimeType, filename) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+
+        function copyContactInfo() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = 'vexus.ai.support@gmail.com';
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            const msgBox = document.createElement('div');
+            msgBox.className = "fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900 border border-brand-500 text-white text-xs px-4 py-2.5 rounded-2xl shadow-2xl z-50 flex items-center gap-2";
+            msgBox.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-brand-400"></i> تم نسخ البريد الإلكتروني للتواصل: vexus.ai.support@gmail.com`;
+            document.body.appendChild(msgBox);
+            if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+            setTimeout(() => document.body.removeChild(msgBox), 3000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        window.onload = function () {
+            populateCategoryDropdowns();
+            populateIntentDropdown();
+            generateDataset();
+            checkProStatus();
+            initGeminiWelcome();
+            renderPrompts();
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
+            }
+        };
+    </script>
+
+<script>
+/*
+ * Production note:
+ * Never put payment provider secrets, Gemini API keys, or gift-code secrets
+ * in this HTML. Configure the following endpoints on your backend:
+ *   POST /api/checkout
+ *   POST /api/redeem
+ *   POST /api/copilot
+ *
+ * The static demo remains usable without a backend; it will show a helpful
+ * message instead of pretending a payment succeeded.
+ */
+async function startSecureCheckout(plan = "pro") {
+  const endpoint = window.VEXUS_CONFIG?.checkoutEndpoint || "/api/checkout";
+  if (!window.VEXUS_CONFIG?.checkoutEndpoint) {
+    vexusToast("الدفع الحقيقي يحتاج Backend آمن. لم يتم تفعيل ترقية وهمية.", "warning");
+    return;
+  }
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "Accept": "application/json"},
+      credentials: "include",
+      body: JSON.stringify({plan})
+    });
+    if (!res.ok) throw new Error("checkout_failed");
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else if (data.sessionId) vexusToast("تم إنشاء جلسة الدفع.");
+    else vexusToast("تعذر بدء جلسة الدفع.");
+  } catch (_) {
+    vexusToast("تعذر الاتصال بخدمة الدفع. حاول لاحقاً.", "error");
+  }
+}
+
+/* Keep the old function name harmless for any legacy inline references. */
+function simulatePaymentSuccess() {
+  vexusToast("تم تعطيل الترقية الوهمية في V2. استخدم الدفع الآمن عبر الخادم.", "warning");
+}
+
+/* Secure Gemini proxy: the browser never receives the Gemini API key. */
+async function vexusGeminiRequest(payload) {
+  const endpoint = window.VEXUS_CONFIG?.copilotEndpoint || "/api/copilot";
+  if (!window.VEXUS_CONFIG?.copilotEndpoint) {
+    throw new Error("COPILOT_BACKEND_NOT_CONFIGURED");
+  }
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {"Content-Type": "application/json", "Accept": "application/json"},
+    credentials: "include",
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) throw new Error("COPILOT_REQUEST_FAILED");
+  return await res.json();
+}
+
+/* Safe CSV download for Arabic / Excel. */
+function vexusDownloadCSV(rows, filename = "vexus-prompts.csv") {
+  if (!Array.isArray(rows)) return;
+  const csv = rows.map(row =>
+    (Array.isArray(row) ? row : Object.values(row)).map(VEXUS_V2.csvCell).join(",")
+  ).join("\r\n");
+  const blob = new Blob(["\uFEFF", csv], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+</script>
+
+
+<div id="vexusV2Badge"
+     class="fixed bottom-3 right-3 z-40 hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl
+            bg-slate-950/80 border border-brand-500/20 text-[10px] text-slate-400 backdrop-blur pointer-events-none">
+  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+  VEXUS V2 • Secure Frontend
+</div>
+
+
+<script>
+window.VEXUS_API = {
+  tokenKey: "vexus_access_token",
+  get token() { return localStorage.getItem(this.tokenKey) || ""; },
+  headers() {
+    const h = {"Content-Type":"application/json","Accept":"application/json"};
+    if (this.token) h.Authorization = "Bearer " + this.token;
+    return h;
+  },
+  async request(path, options = {}) {
+    const res = await fetch((window.VEXUS_CONFIG.apiBase || "/api") + path, {
+      credentials: "include",
+      ...options,
+      headers: {...this.headers(), ...(options.headers || {})}
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error || "API_ERROR"), {status:res.status, data});
+    return data;
+  },
+  async register(email, password) {
+    const d = await this.request("/auth/register", {
+      method:"POST", body:JSON.stringify({email,password})
+    });
+    localStorage.setItem(this.tokenKey, d.token); return d;
+  },
+  async login(email, password) {
+    const d = await this.request("/auth/login", {
+      method:"POST", body:JSON.stringify({email,password})
+    });
+    localStorage.setItem(this.tokenKey, d.token); return d;
+  },
+  logout() { localStorage.removeItem(this.tokenKey); },
+  async redeem(code) {
+    const d = await this.request("/redeem", {
+      method:"POST", body:JSON.stringify({code})
+    });
+    localStorage.setItem(this.tokenKey, d.token); return d;
+  },
+  async prompts(q="") {
+    return this.request("/prompts" + (q ? "?q=" + encodeURIComponent(q) : ""));
+  },
+  async prompt(id) { return this.request("/prompts/" + encodeURIComponent(id)); },
+  async copilot(message) {
+    return this.request("/copilot", {
+      method:"POST", body:JSON.stringify({message})
+    });
+  }
+};
+</script>
+
+
+<script>
+/* VEXUS V2.1 — real frontend/backend integration layer */
+(function(){
+  const original = {
+    openPromptModal: window.openPromptModal,
+    quickCopyPrompt: window.quickCopyPrompt,
+    toggleUpvote: window.toggleUpvote,
+    saveCustomPrompt: window.saveCustomPrompt,
+    sendGeminiMessage: window.sendGeminiMessage
+  };
+
+  const api = window.VEXUS_API;
+  let currentUser = null;
+
+  function toast(message, kind='info') {
+    if (typeof window.vexusToast === 'function') return window.vexusToast(message, kind);
+    const el=document.createElement('div');
+    el.className='fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] px-4 py-3 rounded-2xl text-xs font-semibold shadow-2xl border bg-slate-900 text-white border-slate-700';
+    el.textContent=message; document.body.appendChild(el); setTimeout(()=>el.remove(),2800);
+  }
+  window.vexusToast = window.vexusToast || toast;
+
+  function authModal(){
+    if(document.getElementById('vexusAuthModal')) return;
+    const el=document.createElement('div');
+    el.id='vexusAuthModal';
+    el.className='fixed inset-0 z-[90] hidden bg-slate-950/85 backdrop-blur-md items-center justify-center p-4';
+    el.innerHTML=`<div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeVexusAuth()" class="absolute top-4 left-4 text-slate-400 hover:text-white">✕</button>
+      <div class="text-center mb-5"><div class="text-2xl font-black text-white">VEXUS Account</div><div class="text-xs text-slate-400 mt-1">سجّل الدخول لحماية مكتبتك وفتح صلاحياتك.</div></div>
+      <div class="flex gap-2 mb-4"><button id="vexusLoginTab" onclick="setVexusAuthMode('login')" class="flex-1 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold">دخول</button><button id="vexusRegisterTab" onclick="setVexusAuthMode('register')" class="flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold">حساب جديد</button></div>
+      <input id="vexusAuthEmail" type="email" autocomplete="email" placeholder="البريد الإلكتروني" class="w-full mb-3 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-brand-500">
+      <input id="vexusAuthPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور — 8 أحرف على الأقل" class="w-full mb-3 bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white outline-none focus:border-brand-500">
+      <button id="vexusAuthSubmit" onclick="submitVexusAuth()" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 text-white text-xs font-extrabold">تسجيل الدخول</button>
+      <div id="vexusAuthStatus" class="hidden mt-3 p-3 rounded-xl text-xs"></div>
+    </div>`;
+    document.body.appendChild(el);
+  }
+  let authMode='login';
+  window.openVexusAuth=()=>{authModal(); const m=document.getElementById('vexusAuthModal'); m.classList.remove('hidden');m.classList.add('flex');setVexusAuthMode('login');};
+  window.closeVexusAuth=()=>{const m=document.getElementById('vexusAuthModal');if(m){m.classList.add('hidden');m.classList.remove('flex');}};
+  window.setVexusAuthMode=(mode)=>{authMode=mode; const a=document.getElementById('vexusLoginTab'),b=document.getElementById('vexusRegisterTab'),s=document.getElementById('vexusAuthSubmit'); if(!a)return; a.className=mode==='login'?'flex-1 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold':'flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold'; b.className=mode==='register'?'flex-1 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold':'flex-1 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold'; s.textContent=mode==='login'?'تسجيل الدخول':'إنشاء الحساب';};
+  window.submitVexusAuth=async()=>{
+    const email=document.getElementById('vexusAuthEmail').value.trim(), password=document.getElementById('vexusAuthPassword').value;
+    const st=document.getElementById('vexusAuthStatus'); if(!email||!password){st.textContent='أدخل البريد وكلمة المرور.';st.className='mt-3 p-3 rounded-xl text-xs bg-rose-950 text-rose-300';st.classList.remove('hidden');return;}
+    try{ const d=authMode==='login'?await api.login(email,password):await api.register(email,password); currentUser=d.user; applyUser(currentUser); closeVexusAuth(); toast('تم تسجيل الدخول بنجاح ❤️','success'); await loadServerPrompts(); }
+    catch(e){ st.textContent=({EMAIL_ALREADY_EXISTS:'البريد مستعمل مسبقاً.',INVALID_LOGIN:'البريد أو كلمة المرور غير صحيحة.',INVALID_CREDENTIALS:'تحقق من البريد وكلمة المرور.'}[e?.data?.error||e.message]||'تعذر إتمام العملية.');st.className='mt-3 p-3 rounded-xl text-xs bg-rose-950 border border-rose-500/30 text-rose-300';st.classList.remove('hidden'); }
+  };
+
+  function addAccountButton(){
+    if(document.getElementById('vexusAccountBtn')) return;
+    const header=document.querySelector('header'); if(!header)return;
+    const btn=document.createElement('button'); btn.id='vexusAccountBtn'; btn.className='fixed top-4 left-4 rtl:left-4 ltr:right-4 z-40 px-3 py-2 rounded-xl bg-slate-900/90 border border-slate-700 text-[10px] font-bold text-white backdrop-blur'; btn.onclick=()=> currentUser ? logoutVexus() : openVexusAuth(); header.appendChild(btn);
+  }
+  async function logoutVexus(){api.logout();currentUser=null;applyUser({tier:'free'});await loadServerPrompts();toast('تم تسجيل الخروج.','info');}
+  window.logoutVexus=logoutVexus;
+  function applyUser(user){
+    currentUser=user||{tier:'free'}; userTier=currentUser.tier||'free'; isProUnlocked=userTier!=='free';
+    const b=document.getElementById('vexusAccountBtn'); if(b)b.textContent=currentUser.email?`${currentUser.email} · ${userTier.toUpperCase()} · خروج`:'تسجيل الدخول';
+    if(typeof checkProStatus==='function') checkProStatus();
+  }
+
+  async function refreshSession(){
+    if(!api.token){applyUser({tier:'free'});return;}
+    try{ const d=await api.request('/me'); applyUser(d.user); }
+    catch{api.logout();applyUser({tier:'free'});}
+  }
+
+  function translatePrompt(p){
+    return {...p, category:(categoryDict?.[currentLang]?.[p.categoryKey]||p.categoryKey), promptText:p.promptText||''};
+  }
+  async function loadServerPrompts(){
+    try{
+      const d=await api.prompts('',); promptsData=(d.prompts||[]).map(translatePrompt);
+      checkProStatus(); renderPrompts();
+    }catch(e){ toast('تعذر تحميل مكتبة VEXUS من الخادم.','error'); }
+  }
+
+  window.redeemGiftCode=async function(){
+    const input=document.getElementById('giftCodeInput'), status=document.getElementById('checkoutStatus'); if(!input||!status)return;
+    if(!api.token){openVexusAuth();toast('سجّل الدخول أولاً لتفعيل الكود.','warning');return;}
+    try{ const d=await api.redeem(input.value.trim()); applyUser(d.user); status.className='p-3 bg-emerald-950/90 border border-emerald-500/40 rounded-xl text-center text-xs text-emerald-300 font-semibold';status.textContent=`تم تفعيل الكود بنجاح — باقة ${d.user.tier.toUpperCase()}.`;status.classList.remove('hidden');await loadServerPrompts();setTimeout(closePricingModal,1000); }
+    catch(e){ status.className='p-3 bg-rose-950/90 border border-rose-500/40 rounded-xl text-center text-xs text-rose-300 font-semibold';status.textContent='الكود غير صالح أو سبق استخدامه.';status.classList.remove('hidden'); }
+  };
+
+  window.startSecureCheckout=async function(plan='pro'){
+    if(!api.token){openVexusAuth();toast('سجّل الدخول قبل الدفع.','warning');return;}
+    const status=document.getElementById('checkoutStatus');
+    try{ if(status){status.className='p-3 bg-slate-800 border border-slate-700 rounded-xl text-center text-xs text-slate-300';status.textContent='جاري إنشاء جلسة دفع آمنة…';status.classList.remove('hidden');} const d=await api.request('/checkout',{method:'POST',body:JSON.stringify({tier:plan})}); if(d.url) location.href=d.url; }
+    catch(e){ if(status){status.textContent=e?.data?.error==='STRIPE_NOT_CONFIGURED'?'Stripe غير مفعّل بعد في ملف .env على الخادم.':'تعذر إنشاء عملية الدفع.';} }
+  };
+
+  window.toggleUpvote=async function(id){
+    if(!api.token){openVexusAuth();return;}
+    try{await api.request('/prompts/'+encodeURIComponent(id)+'/vote',{method:'POST'});await loadServerPrompts();}catch{toast('تعذر حفظ التصويت.','error');}
+  };
+
+  window.quickCopyPrompt=async function(id,btn){
+    const item=promptsData.find(p=>p.id===id);
+    if(!item)return;
+    if(item.locked){openPricingModal();return;}
+    if(!item.promptText){const d=await api.prompt(id);Object.assign(item,translatePrompt(d.prompt));}
+    await navigator.clipboard?.writeText(item.promptText).catch(()=>{});
+    if(!navigator.clipboard){const ta=document.createElement('textarea');ta.value=item.promptText;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+    try{await api.request('/prompts/'+encodeURIComponent(id)+'/copy',{method:'POST'});}catch{}
+    if(btn){btn.innerHTML='✓';setTimeout(()=>{btn.innerHTML='<i data-lucide="copy-check" class="w-3.5 h-3.5 text-sky-400"></i>';lucide?.createIcons?.();},1200);}
+  };
+
+  window.openPromptModal=async function(id){
+    const item=promptsData.find(p=>p.id===id); if(!item)return;
+    if(item.locked){openPricingModal();return;}
+    if(!item.promptText){try{const d=await api.prompt(id);Object.assign(item,translatePrompt(d.prompt));}catch(e){openPricingModal();return;}}
+    original.openPromptModal(id);
+  };
+
+  window.sendGeminiMessage=async function(){
+    const input=document.getElementById('geminiInput'), text=input?.value.trim(); if(!text)return;
+    const chatBox=document.getElementById('geminiChatMessages'); if(!api.token){openVexusAuth();return;}
+    const u=document.createElement('div');u.className='bg-brand-600/30 p-3 rounded-2xl text-slate-100 border border-brand-500/40 text-left rtl:text-right font-medium';u.textContent=text;chatBox.appendChild(u);input.value='';
+    const l=document.createElement('div');l.className='bg-slate-800 p-3 rounded-2xl text-slate-400 italic';l.textContent='جاري التفكير…';chatBox.appendChild(l);chatBox.scrollTop=chatBox.scrollHeight;
+    try{const d=await api.copilot(text);l.remove();const a=document.createElement('div');a.className='bg-slate-800 p-3 rounded-2xl text-slate-200 border border-slate-700 leading-relaxed';a.textContent=d.reply||'لم يصل رد.';chatBox.appendChild(a);}catch(e){l.textContent='Co-Pilot غير مهيأ على الخادم حالياً.';} chatBox.scrollTop=chatBox.scrollHeight;
+  };
+
+  window.saveCustomPrompt=async function(){
+    const title=document.getElementById('newPromptTitle')?.value.trim(), category=document.getElementById('newPromptCategory')?.value, text=document.getElementById('newPromptText')?.value.trim();
+    if(!api.token){openVexusAuth();return;} if(!title||!text)return;
+    try{await api.request('/custom-prompts',{method:'POST',body:JSON.stringify({title,category,promptText:text})});closeCustomPromptModal();document.getElementById('newPromptTitle').value='';document.getElementById('newPromptText').value='';toast('تم حفظ البرومبت في حسابك.','success');await loadServerPrompts();}catch{toast('تعذر حفظ البرومبت.','error');}
+  };
+
+  window.onload=async function(){
+    addAccountButton();
+    populateCategoryDropdowns(); populateIntentDropdown(); initGeminiWelcome();
+    await refreshSession(); await loadServerPrompts();
+    if(window.lucide?.createIcons)lucide.createIcons();
+  };
+})();
+</script>
+
+</body>
+</html>
