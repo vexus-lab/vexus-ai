@@ -1,0 +1,4 @@
+node_modules
+backend/vexus.sqlite*
+.env
+npm-debug.log*
